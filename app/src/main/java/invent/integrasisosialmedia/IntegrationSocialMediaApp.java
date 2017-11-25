@@ -9,7 +9,7 @@ import com.facebook.FacebookSdk;
  * Created by LIMS on 22/11/2017.
  */
 
-public class IntegrationSosialMediaApp extends MultiDexApplication {
+public class IntegrationSocialMediaApp extends MultiDexApplication {
 
     @Override
     protected void attachBaseContext(Context base) {

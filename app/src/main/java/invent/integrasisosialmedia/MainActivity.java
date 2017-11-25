@@ -1,12 +1,16 @@
 package invent.integrasisosialmedia;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button logout;
     ImageView bmImage;
+    TextView tvModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         assignListener();
 
         displayProfile();
+        checkModelDevice();
     }
 
     @Override
@@ -55,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeLayout() {
         logout = (Button) findViewById(R.id.logout);
         bmImage = (ImageView) findViewById(R.id.profileImage);
+        tvModel = (TextView) findViewById(R.id.tv_model);
     }
 
     private void assignListener() {
@@ -84,8 +91,23 @@ public class MainActivity extends AppCompatActivity {
     private void showDialogShare() {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("https://play.google.com/store/apps/details?id=com.mobile.legends&hl=en"));
+        String link = "https://play.google.com/store/search?q=mobile%20legend&c=apps";
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, link);
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
+
+    private void checkModelDevice() {
+        String model = Build.MANUFACTURER
+                + " \n " + Build.MODEL
+                + " \n " + Build.VERSION.RELEASE
+                + " \n " + Build.VERSION_CODES.class.getFields()[Build.VERSION.SDK_INT].getName()
+                + " \n " + Build.DEVICE
+                + " \n " + Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        @SuppressLint("WifiManagerLeak") WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+        tvModel.setText(model +"\n"+ ip);
     }
 
     public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
